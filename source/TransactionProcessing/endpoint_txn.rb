@@ -45,7 +45,7 @@ class Txn
 		workflow_id = URI::encode(evo_cws_client.workflow_id);
 
 		evo_cws_client.last_call = self.name + "::" + __method__.to_s;
-		evo_cws_client.send( RbConfig::BasePath + '/txn/'+ workflow_id, request, Net::HTTP::Post, RbConfig::BaseURL);
+		evo_cws_client.send( RbConfig::BasePath + '/TPS.svc/'+ workflow_id, request, Net::HTTP::Post, RbConfig::BaseURL);
 	end
 
 	def self.authorize(evo_cws_client, request)
@@ -120,7 +120,7 @@ class Txn
 		workflow_id = URI::encode(evo_cws_client.workflow_id);
 		
 		evo_cws_client.last_call = self.name + "::" + __method__.to_s;
-		evo_cws_client.send( RbConfig::BasePath + '/txn/'+workflow_id, request, Net::HTTP::Post, RbConfig::BaseURL);
+		evo_cws_client.send( RbConfig::BasePath + '/TPS.svc/'+workflow_id, request, Net::HTTP::Post, RbConfig::BaseURL);
 	end
 def self.authorize_and_capture_encrypted(evo_cws_client, request)
     defaults= {
@@ -165,7 +165,7 @@ def self.authorize_and_capture_encrypted(evo_cws_client, request)
     workflow_id = URI::encode(evo_cws_client.workflow_id);
 
     evo_cws_client.last_call = self.name + "::" + __method__.to_s;
-    evo_cws_client.send( RbConfig::BasePath + '/txn/'+ workflow_id, request, Net::HTTP::Post, RbConfig::BaseURL);
+    evo_cws_client.send( RbConfig::BasePath + '/TPS.svc/'+ workflow_id, request, Net::HTTP::Post, RbConfig::BaseURL);
   end
   
 def self.authorize_and_capture(evo_cws_client, request)
@@ -240,7 +240,7 @@ def self.authorize_and_capture(evo_cws_client, request)
     workflow_id = URI::encode(evo_cws_client.workflow_id);
     
     evo_cws_client.last_call = self.name + "::" + __method__.to_s;
-    evo_cws_client.send( RbConfig::BasePath + '/txn/'+workflow_id, request, Net::HTTP::Post, RbConfig::BaseURL);
+    evo_cws_client.send( RbConfig::BasePath + '/TPS.svc/'+workflow_id, request, Net::HTTP::Post, RbConfig::BaseURL);
   end
 
 
@@ -264,7 +264,7 @@ def self.authorize_and_capture(evo_cws_client, request)
 		workflow_id = URI::encode(evo_cws_client.workflow_id);
 		
 		evo_cws_client.last_call = self.name + "::" + __method__.to_s;
-		evo_cws_client.send(RbConfig::BasePath + '/txn/'+workflow_id+'/'+request['DifferenceData']['TransactionId'], request, Net::HTTP::Put, RbConfig::BaseURL);
+		evo_cws_client.send(RbConfig::BasePath + '/TPS.svc/'+workflow_id+'/'+request['DifferenceData']['TransactionId'], request, Net::HTTP::Put, RbConfig::BaseURL);
 	end
 
 	def self.undo(evo_cws_client, request)
@@ -285,7 +285,7 @@ def self.authorize_and_capture(evo_cws_client, request)
 		workflow_id = URI::encode(evo_cws_client.workflow_id);
 		
 		evo_cws_client.last_call = self.name + "::" + __method__.to_s;
-		evo_cws_client.send(RbConfig::BasePath + '/txn/' + workflow_id+'/'+request['DifferenceData']['TransactionId'], request, Net::HTTP::Put, RbConfig::BaseURL);
+		evo_cws_client.send(RbConfig::BasePath + '/TPS.svc/' + workflow_id+'/'+request['DifferenceData']['TransactionId'], request, Net::HTTP::Put, RbConfig::BaseURL);
 	end
 
   def self.return_by_id(evo_cws_client, request)
@@ -310,7 +310,7 @@ def self.authorize_and_capture(evo_cws_client, request)
     workflow_id = URI::encode(evo_cws_client.workflow_id);
     
     evo_cws_client.last_call = self.name + "::" + __method__.to_s;
-    evo_cws_client.send(RbConfig::BasePath + '/txn/'+ workflow_id, request, Net::HTTP::Post, RbConfig::BaseURL);
+    evo_cws_client.send(RbConfig::BasePath + '/TPS.svc/'+ workflow_id, request, Net::HTTP::Post, RbConfig::BaseURL);
   end
   def self.return_unlinked_encrypted(evo_cws_client, request)
     defaults= {
@@ -355,7 +355,7 @@ def self.authorize_and_capture(evo_cws_client, request)
     workflow_id = URI::encode(evo_cws_client.workflow_id);
 
     evo_cws_client.last_call = self.name + "::" + __method__.to_s;
-    evo_cws_client.send( RbConfig::BasePath + '/txn/'+ workflow_id, request, Net::HTTP::Post, RbConfig::BaseURL);
+    evo_cws_client.send( RbConfig::BasePath + '/TPS.svc/'+ workflow_id, request, Net::HTTP::Post, RbConfig::BaseURL);
   end
   
 	def self.return_unlinked(evo_cws_client, request)
@@ -426,7 +426,7 @@ def self.authorize_and_capture(evo_cws_client, request)
 		request = Evo.recursive_merge(defaults, request);
 
 		evo_cws_client.last_call = self.name + "::" + __method__.to_s;
-		evo_cws_client.send(RbConfig::BasePath + '/txn/'+evo_cws_client.workflow_id, request, Net::HTTP::Post, RbConfig::BaseURL);
+		evo_cws_client.send(RbConfig::BasePath + '/TPS.svc/'+evo_cws_client.workflow_id, request, Net::HTTP::Post, RbConfig::BaseURL);
 	end
 
 
@@ -445,7 +445,7 @@ def self.authorize_and_capture(evo_cws_client, request)
 		workflow_id = URI::encode(evo_cws_client.workflow_id);
 		
 		evo_cws_client.last_call = self.name + "::" + __method__.to_s;
-		evo_cws_client.send(RbConfig::BasePath + '/txn/'+workflow_id, request, Net::HTTP::Put, RbConfig::BaseURL);
+		evo_cws_client.send(RbConfig::BasePath + '/TPS.svc/'+workflow_id, request, Net::HTTP::Put, RbConfig::BaseURL);
 	end
 
 
@@ -471,7 +471,7 @@ def self.authorize_and_capture(evo_cws_client, request)
 		workflow_id = URI::encode(evo_cws_client.workflow_id);
 		
 		evo_cws_client.last_call = self.name + "::" + __method__.to_s;
-		evo_cws_client.send(RbConfig::BasePath + '/txn/'+workflow_id, request, Net::HTTP::Put, RbConfig::BaseURL);
+		evo_cws_client.send(RbConfig::BasePath + '/TPS.svc/'+workflow_id, request, Net::HTTP::Put, RbConfig::BaseURL);
 	end
 
 end

@@ -16,7 +16,7 @@ class MerchantManagement
     end
         
     evo_cws_client.last_call = self.name + "::" + __method__.to_s;
-        evo_cws_client.send(RbConfig::BasePath + '/svcinfo/merchprofile?'+params, nil, Net::HTTP::Get, RbConfig::BaseURL);
+        evo_cws_client.send(RbConfig::BasePath + '/SIS.svc/merchprofile?'+params, nil, Net::HTTP::Get, RbConfig::BaseURL);
     end
     
     def self.get_merchant_profile(evo_cws_client, merchant_profile_id="", workflow_id="")
@@ -36,7 +36,7 @@ class MerchantManagement
     merchant_profile_id = URI::encode(merchant_profile_id);
 
     evo_cws_client.last_call = self.name + "::" + __method__.to_s;
-        evo_cws_client.send(RbConfig::BasePath + '/svcinfo/merchprofile/'+merchant_profile_id+'?'+params, nil, Net::HTTP::Get, RbConfig::BaseURL);
+        evo_cws_client.send(RbConfig::BasePath + '/SIS.svc/merchprofile/'+merchant_profile_id+'?'+params, nil, Net::HTTP::Get, RbConfig::BaseURL);
     end
     
     
@@ -59,7 +59,7 @@ class MerchantManagement
     merchant_profile_id = URI::encode(merchant_profile_id);
     
     evo_cws_client.last_call = self.name + "::" + __method__.to_s;
-        result= evo_cws_client.send(RbConfig::BasePath + '/svcinfo/merchprofile/'+merchant_profile_id+'/OK?'+params, nil, Net::HTTP::Get, RbConfig::BaseURL);
+        result= evo_cws_client.send(RbConfig::BasePath + '/SIS.svc/merchprofile/'+merchant_profile_id+'/OK?'+params, nil, Net::HTTP::Get, RbConfig::BaseURL);
 
         if (result.data["RuleMessage"] == "true")
             result.data["Success"] = true;
@@ -84,7 +84,7 @@ class MerchantManagement
     merchant_profile_id = URI::encode(merchant_profile_id);
 
     evo_cws_client.last_call = self.name + "::" + __method__.to_s;
-        evo_cws_client.send(RbConfig::BasePath + '/svcinfo/merchprofile/'+merchant_profile_id+'?'+params, nil, Net::HTTP::Delete, RbConfig::BaseURL);
+        evo_cws_client.send(RbConfig::BasePath + '/SIS.svc/merchprofile/'+merchant_profile_id+'?'+params, nil, Net::HTTP::Delete, RbConfig::BaseURL);
     end
     
     def self.save_merchant_profiles(evo_cws_client, merchant_profiles, workflow_id = "")
@@ -100,7 +100,7 @@ class MerchantManagement
     merchant_profile_id = URI::encode(merchant_profile_id);
         
     evo_cws_client.last_call = self.name + "::" + __method__.to_s;
-        evo_cws_client.send(RbConfig::BasePath + '/SvcInfo/merchProfile?'+params, merchant_profiles, Net::HTTP::Put, RbConfig::BaseURL);
+        evo_cws_client.send(RbConfig::BasePath + '/SIS.svc/merchProfile?'+params, merchant_profiles, Net::HTTP::Put, RbConfig::BaseURL);
     end
     
     def self.save_merchant_profile(evo_cws_client, merchant_profile, workflow_id = "")
@@ -158,7 +158,7 @@ class MerchantManagement
    p "WorkflowId = " + workflow_id;
             
     evo_cws_client.last_call = self.name + "::" + __method__.to_s;
-        response = evo_cws_client.send(RbConfig::BasePath + '/SvcInfo/merchProfile?'+params, merchant_profiles, Net::HTTP::Put, RbConfig::BaseURL);
+        response = evo_cws_client.send(RbConfig::BasePath + '/SIS.svc/merchProfile?'+params, merchant_profiles, Net::HTTP::Put, RbConfig::BaseURL);
       
      
     end
