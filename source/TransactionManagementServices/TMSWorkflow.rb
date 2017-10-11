@@ -27,111 +27,105 @@ require 'json'
 
 module Workflows
   def self.TMS(client)
+    client.do_log = true
+    txnIds = []; # Create array to capture all of the txnIds returned on teh transactions summaries call
+    txn_summaries_response = EvoCWS_endpoint_tms.query_transactions_summary(client, {})
 
-    client.do_log=true;
-    txnIds = Array.new; # Create array to capture all of the txnIds returned on teh transactions summaries call
-    txn_summaries_response = EvoCWS_endpoint_tms.query_transactions_summary(client, {});
+    p(txn_summaries_response.data)
+    test_assert(txn_summaries_response.data['Success'] == true, client)
+    test_assert(txn_summaries_response.data['Status'] != 'Failure', client)
 
-    p( txn_summaries_response.data );
-    test_assert(txn_summaries_response.data["Success"]==true, client);
-    test_assert(txn_summaries_response.data["Status"]!="Failure", client);
+    unless txn_summaries_response.data['Results'].empty?
 
-    if (txn_summaries_response.data["Results"].length != 0) then
-
-      txn_summaries_response.data["Results"].each { |summaryDetail|
-
-        summaryDetail['TransactionInformation'].each { |txnInfo|
-
-          if (txnInfo[0] != "TransactionId") then next; end
+      txn_summaries_response.data['Results'].each do |summaryDetail|
+        summaryDetail['TransactionInformation'].each do |txnInfo|
+          next if txnInfo[0] != 'TransactionId'
           txnIds.push(txnInfo[1]); # Set the TransactionId of each txn to the array
-        }
-      }
+        end
+      end
     end
 
-    query_txn_details= {
-      "queryTransactionsParameters"=> {
-        "Amounts" => nil,
-        "ApprovalCodes"=> nil,
-        "BatchIds"=> nil,
-        "CaptureDateRange" => nil,
-        "CaptureStates" => nil, # ["ReadyForCapture","Captured"],
-        "CardTypes"=> nil,
-        "IsAcknowledged" => "false",
-        "MerchantProfileIds"=> nil,
-        "OrderNumbers" => nil,
-        "QueryType" => "AND",
-        "ServiceIds" => nil,
-        "ServiceKeys" => nil,
-        "TransactionClassTypePairs" => nil,
-        "TransactionDateRange" => nil,
-        "TransactionIds" => [txnIds[0]], # This will only retrieve the first transaction in the txnIds array for the detail
-        "TransactionStates" => nil
+    query_txn_details = {
+      'queryTransactionsParameters' => {
+        'Amounts' => nil,
+        'ApprovalCodes' => nil,
+        'BatchIds' => nil,
+        'CaptureDateRange' => nil,
+        'CaptureStates' => nil, # ["ReadyForCapture","Captured"],
+        'CardTypes' => nil,
+        'IsAcknowledged' => 'false',
+        'MerchantProfileIds' => nil,
+        'OrderNumbers' => nil,
+        'QueryType' => 'AND',
+        'ServiceIds' => nil,
+        'ServiceKeys' => nil,
+        'TransactionClassTypePairs' => nil,
+        'TransactionDateRange' => nil,
+        'TransactionIds' => [txnIds[0]], # This will only retrieve the first transaction in the txnIds array for the detail
+        'TransactionStates' => nil
       },
-      "includeRelated" => false,
-      "pagingParameters" => {
-        "Page" => "0",
-        "PageSize" => "50"
+      'includeRelated' => false,
+      'pagingParameters' => {
+        'Page' => '0',
+        'PageSize' => '50'
       }
-    };
-    txn_details_response = EvoCWS_endpoint_tms.query_transactions_detail(client, query_txn_details);
+    }
+    txn_details_response = EvoCWS_endpoint_tms.query_transactions_detail(client, query_txn_details)
 
-    p( txn_details_response.data );
-    test_assert(txn_details_response.data["Success"]==true, client);
-    test_assert(txn_details_response.data["Status"]!="Failure", client);
+    p(txn_details_response.data)
+    test_assert(txn_details_response.data['Success'] == true, client)
+    test_assert(txn_details_response.data['Status'] != 'Failure', client)
 
     # Now lets set up a transaction family to query on by running an Authorize followed by a Undo.
     # We will then query by the ReturnById TxnId to retrieve both TxnIds that are related
 
     ########################
 
-    authorized_response = EvoCWS_endpoint_txn.authorize(client, {});
+    authorized_response = EvoCWS_endpoint_txn.authorize(client, {})
 
-    p( authorized_response.data );
-    test_assert(authorized_response.data["Success"]==true, client);
-    test_assert(authorized_response.data["Status"]!="Failure", client);
+    p(authorized_response.data)
+    test_assert(authorized_response.data['Success'] == true, client)
+    test_assert(authorized_response.data['Status'] != 'Failure', client)
 
-    undo_response = EvoCWS_endpoint_txn.undo(client, {
-      "DifferenceData" => {
-        "TransactionId" => authorized_response.data["TransactionId"]
-      }
-    });
-    
-    query_family_details= {
-      "queryTransactionsParameters"=> {
-        "Amounts" => nil,
-        "ApprovalCodes"=> nil,
-        "BatchIds"=> nil,
-        "CaptureDateRange" => nil,
-        "CaptureStates" => nil, # ["ReadyForCapture","Captured"],
-        "CardTypes"=> nil,
-        "IsAcknowledged" => "false",
-        "MerchantProfileIds"=> nil,
-        "OrderNumbers" => nil,
-        "QueryType" => "AND",
-        "ServiceIds" => nil,
-        "ServiceKeys" => nil,
-        "TransactionClassTypePairs" => nil,
-        "TransactionDateRange" => nil,
-        "TransactionIds" => [undo_response.data["TransactionId"]], 
-        "TransactionStates" => nil
+    undo_response = EvoCWS_endpoint_txn.undo(client, 'DifferenceData' => {
+                                               'TransactionId' => authorized_response.data['TransactionId']
+                                             })
+
+    query_family_details = {
+      'queryTransactionsParameters' => {
+        'Amounts' => nil,
+        'ApprovalCodes' => nil,
+        'BatchIds' => nil,
+        'CaptureDateRange' => nil,
+        'CaptureStates' => nil, # ["ReadyForCapture","Captured"],
+        'CardTypes' => nil,
+        'IsAcknowledged' => 'false',
+        'MerchantProfileIds' => nil,
+        'OrderNumbers' => nil,
+        'QueryType' => 'AND',
+        'ServiceIds' => nil,
+        'ServiceKeys' => nil,
+        'TransactionClassTypePairs' => nil,
+        'TransactionDateRange' => nil,
+        'TransactionIds' => [undo_response.data['TransactionId']],
+        'TransactionStates' => nil
       },
-      "includeRelated" => false,
-      "pagingParameters" => {
-        "Page" => "0",
-        "PageSize" => "50"
+      'includeRelated' => false,
+      'pagingParameters' => {
+        'Page' => '0',
+        'PageSize' => '50'
       }
-    };
-    family_details_response = EvoCWS_endpoint_tms.query_transactions_families(client, query_family_details);
+    }
+    family_details_response = EvoCWS_endpoint_tms.query_transactions_families(client, query_family_details)
 
-    p( family_details_response.data );
-    test_assert(family_details_response.data["Success"]==true, client);
-    test_assert(family_details_response.data["Status"]!="Failure", client);
-    
-    query_batch_response = EvoCWS_endpoint_tms.query_batch(client, query_family_details);
+    p(family_details_response.data)
+    test_assert(family_details_response.data['Success'] == true, client)
+    test_assert(family_details_response.data['Status'] != 'Failure', client)
 
-    p( query_batch_response.data );
-    test_assert(query_batch_response.data["Success"]==true, client);
-    test_assert(query_batch_response.data["Status"]!="Failure", client);
-    
+    query_batch_response = EvoCWS_endpoint_tms.query_batch(client, query_family_details)
+
+    p(query_batch_response.data)
+    test_assert(query_batch_response.data['Success'] == true, client)
+    test_assert(query_batch_response.data['Status'] != 'Failure', client)
   end
 end
