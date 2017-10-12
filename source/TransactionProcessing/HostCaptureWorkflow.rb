@@ -7,7 +7,6 @@ module Workflows
     # Get service information to see the avilable functions.
 
     service_response = EvoCWS_endpoint_svcinfo.get_service_info(client)
-    p(service_response.data)
     test_assert(service_response.data['Success'] == true, client)
 
     pindebit_auth_template = {
@@ -48,7 +47,6 @@ module Workflows
       end
       if serviceId_found || workflowId_found
         profiles_response = EvoCWS_endpoint_merchinfo.get_merchant_profiles(client, client.service_id)
-        p(profiles_response.data)
         test_assert(profiles_response.data['Success'] == true, client)
         merchId = ''
         parsed_response = JSON.parse(profiles_response.body)
@@ -67,7 +65,6 @@ module Workflows
         # Fallthrough is okay. It selects the most recently created profile.
 
         profile = EvoCWS_endpoint_merchinfo.is_merchant_profile_initialized(client, client.merchant_profile_id, client.service_id)
-        p(profile.data)
         test_assert(profile.data['Success'] == true, client)
 
         ####################
@@ -77,49 +74,46 @@ module Workflows
         else
           authorized_response = EvoCWS_endpoint_txn.authorize(client, {})
         end
-
-        p(authorized_response.data)
         test_assert(authorized_response.data['Success'] == true, client)
         test_assert(authorized_response.data['Status'] != 'Failure', client)
 
-        captured_response = EvoCWS_endpoint_txn.capture(client, 'DifferenceData' => {
-                                                          "\type" => 'BankcardCapture,http://schemas.evosnap.com/CWS/v2.0/Transactions/Bankcard',
-                                                          'Amount' => '10.00',
-                                                          'TransactionId' => authorized_response.data['TransactionId'],
-                                                          'TipAmount' => '0.00'
-                                                        })
-
-        p(captured_response.data)
+        captured_response = EvoCWS_endpoint_txn.capture(client,
+          'DifferenceData' => {
+            "\type" => 'BankcardCapture,http://schemas.evosnap.com/CWS/v2.0/Transactions/Bankcard',
+            'Amount' => '10.00',
+            'TransactionId' => authorized_response.data['TransactionId'],
+            'TipAmount' => '0.00'
+          }
+        )
 
         if RbConfig::UseWorkflow == true
           captured_response = EvoCWS_endpoint_txn.authorize_and_capture_encrypted(client, {})
         else
           captured_response = EvoCWS_endpoint_txn.authorize_and_capture(client, {})
-    end
+        end
         captured_response = EvoCWS_endpoint_txn.authorize_and_capture(client, {})
-        p(authorized_response.data)
-
         test_assert(captured_response.data['Success'] == true, client)
         test_assert(captured_response.data['Status'] != 'Failure', client)
 
-        response = EvoCWS_endpoint_txn.return_by_id(client, 'DifferenceData' => {
-                                                      'TransactionId' => captured_response.data['TransactionId']
-                                                    })
-        p(response.data)
+        response = EvoCWS_endpoint_txn.return_by_id(client,
+          'DifferenceData' => {
+            'TransactionId' => captured_response.data['TransactionId']
+          }
+        )
 
         if RbConfig::UseWorkflow == true
           authorized_response = EvoCWS_endpoint_txn.authorize_encrypted(client, {})
         else
           authorized_response = EvoCWS_endpoint_txn.authorize(client, {})
-    end
-
-        p(authorized_response.data)
+        end
         test_assert(authorized_response.data['Success'] == true, client)
         test_assert(authorized_response.data['Status'] != 'Failure', client)
 
-        response = EvoCWS_endpoint_txn.undo(client, 'DifferenceData' => {
-                                              'TransactionId' => authorized_response.data['TransactionId']
-                                            })
+        response = EvoCWS_endpoint_txn.undo(client,
+          'DifferenceData' => {
+            'TransactionId' => authorized_response.data['TransactionId']
+          }
+        )
 
         if RbConfig::UseWorkflow == true
           response = EvoCWS_endpoint_txn.return_unlinked_encrypted(client, {})
@@ -127,8 +121,6 @@ module Workflows
           response = EvoCWS_endpoint_txn.return_unlinked(client, {})
         end
         response = EvoCWS_endpoint_txn.return_unlinked(client, {})
-        p(response.data)
-
       end
     end
   end

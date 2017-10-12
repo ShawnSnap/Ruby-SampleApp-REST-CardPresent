@@ -28,16 +28,15 @@ require 'json'
 module Workflows
   def self.TMS(client)
     client.do_log = true
-    txnIds = []; # Create array to capture all of the txnIds returned on teh transactions summaries call
+    txnIds = []; # Create array to capture all of the txnIds returned on the transactions summaries call
     txn_summaries_response = EvoCWS_endpoint_tms.query_transactions_summary(client, {})
 
-    p(txn_summaries_response.data)
     test_assert(txn_summaries_response.data['Success'] == true, client)
     test_assert(txn_summaries_response.data['Status'] != 'Failure', client)
 
-    unless txn_summaries_response.data['Results'].empty?
+    unless txn_summaries_response.data['TransactionDetails'].empty?
 
-      txn_summaries_response.data['Results'].each do |summaryDetail|
+      txn_summaries_response.data['TransactionDetails'].each do |summaryDetail|
         summaryDetail['TransactionInformation'].each do |txnInfo|
           next if txnInfo[0] != 'TransactionId'
           txnIds.push(txnInfo[1]); # Set the TransactionId of each txn to the array
@@ -71,8 +70,6 @@ module Workflows
       }
     }
     txn_details_response = EvoCWS_endpoint_tms.query_transactions_detail(client, query_txn_details)
-
-    p(txn_details_response.data)
     test_assert(txn_details_response.data['Success'] == true, client)
     test_assert(txn_details_response.data['Status'] != 'Failure', client)
 
@@ -82,8 +79,6 @@ module Workflows
     ########################
 
     authorized_response = EvoCWS_endpoint_txn.authorize(client, {})
-
-    p(authorized_response.data)
     test_assert(authorized_response.data['Success'] == true, client)
     test_assert(authorized_response.data['Status'] != 'Failure', client)
 
@@ -118,14 +113,7 @@ module Workflows
     }
     family_details_response = EvoCWS_endpoint_tms.query_transactions_families(client, query_family_details)
 
-    p(family_details_response.data)
     test_assert(family_details_response.data['Success'] == true, client)
     test_assert(family_details_response.data['Status'] != 'Failure', client)
-
-    query_batch_response = EvoCWS_endpoint_tms.query_batch(client, query_family_details)
-
-    p(query_batch_response.data)
-    test_assert(query_batch_response.data['Success'] == true, client)
-    test_assert(query_batch_response.data['Status'] != 'Failure', client)
   end
 end

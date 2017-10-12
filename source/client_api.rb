@@ -27,6 +27,7 @@ require 'net/http'
 require 'time'
 require 'base64'
 require 'json'
+require 'pp'
 
 require_relative 'ApplicationAndMerchantSetup/2_ApplicationDataManagement'
 require_relative 'ApplicationAndMerchantSetup/3_GetServiceInformation'
@@ -43,7 +44,6 @@ module Evo
 
     def initialize
       @do_log = false
-      @do_proxy = false
 
       @session_token = ''
 
@@ -60,15 +60,14 @@ module Evo
 
     attr_accessor :application_profile_id, :workflow_id, :service_id
     attr_accessor :merchant_profile_id
-    attr_accessor :do_log, :do_proxy
+    attr_accessor :do_log
     attr_accessor :last_call
 
     def send(path, body, rest_action, url)
       @do_log = true
-      # @do_proxy=true;
-      if @do_proxy
-        url = 'localhost'
-        https = Net::HTTP.new(url, 80)
+      if RbConfig::UseProxy == true
+        https = Net::HTTP.new(url, 443, RbConfig::ProxyHost, RbConfig::ProxyPort)
+				https.use_ssl = true
       else
         https = Net::HTTP.new(url, 443)
         https.use_ssl = true
@@ -91,15 +90,27 @@ module Evo
       request.add_field('Host', url)
 
       unless body.nil?
+				p 'Request Body:'
         body = JSON.generate(body)
-        p body if @do_log
+        if @do_log
+					begin
+						pp JSON.parse(body)
+					rescue JSON::ParserError
+						p body
+					end
+				end
       end
       response = https.start do |https|
         https.request(request, body)
       end
       if @do_log
-        p response.code
-        p response.body
+				p 'Response (code ' + response.code + ') contains response:'
+				begin
+        	pp JSON.parse(response.body)
+				rescue JSON::ParserError
+					p response.body
+				end
+				p '--------  --------  --------  --------  --------  --------  --------  --------  '
       end
       Evo::SimpleResponse.new(response)
     end
@@ -116,7 +127,7 @@ module Evo
       p 'Requesting signOn...' + @session_token[0..32]
       response = send(RbConfig::BasePath + '/SIS.svc/token', nil, Net::HTTP::Get, RbConfig::BaseURL)
 
-      p 'Done'
+      p 'Done requesting signOn!'
 
       if response.code != '200' || response.body.length < 100
         p "Oops, it seems we didn't get a session token. Response code=" + response.code

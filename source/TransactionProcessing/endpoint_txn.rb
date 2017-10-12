@@ -23,7 +23,7 @@ module Evo
           'TransactionData' => {
             'Amount' => '10.00',
             'CurrencyCode' => Evo::TypeISOCurrencyCodeA3::USD,
-            'TransactionDateTime' => '2012-03-22T14:57:28-06:00',
+            'TransactionDateTime' => DateTime.now.iso8601(),
             'ApprovalCode' => nil, # Only set this for Force Post Voice Authorized transactions.
             'CashBackAmount' => '0.00', # Used only for PINDebit transactions
             'CustomerPresent' => RbConfig::TxnData_CustomerPresent,
@@ -88,7 +88,7 @@ module Evo
           'TransactionData' => {
             'Amount' => '10.00',
             'CurrencyCode' => Evo::TypeISOCurrencyCodeA3::USD,
-            'TransactionDateTime' => '2012-03-22T14:57:28-06:00',
+            'TransactionDateTime' => DateTime.now.iso8601(),
             # "AccountType" => Evo::AccountType::NotSet, # Used only for PINDebit transactions
             'ApprovalCode' => nil, # Only set this for Force Post Voice Authorized transactions.
             # "CashBackAmount" => "0.00", # Used only for PINDebit transactions
@@ -143,7 +143,7 @@ module Evo
           'TransactionData' => {
             'Amount' => '10.00',
             'CurrencyCode' => Evo::TypeISOCurrencyCodeA3::USD,
-            'TransactionDateTime' => '2012-03-22T14:57:28-06:00',
+            'TransactionDateTime' => DateTime.now.iso8601(),
             'ApprovalCode' => nil, # Only set this for Force Post Voice Authorized transactions.
             'CashBackAmount' => '0.00', # Used only for PINDebit transactions
             'CustomerPresent' => RbConfig::TxnData_CustomerPresent,
@@ -208,7 +208,7 @@ module Evo
           'TransactionData' => {
             'Amount' => '10.00',
             'CurrencyCode' => Evo::TypeISOCurrencyCodeA3::USD,
-            'TransactionDateTime' => '2012-03-22T14:57:28-06:00',
+            'TransactionDateTime' => DateTime.now.iso8601(),
             'AccountType' => Evo::AccountType::NotSet, # Used only for PINDebit transactions
             'ApprovalCode' => nil, # Only set this for Force Post Voice Authorized transactions.
             'CashBackAmount' => '0.00', # Used only for PINDebit transactions
@@ -331,7 +331,7 @@ module Evo
           'TransactionData' => {
             'Amount' => '10.00',
             'CurrencyCode' => Evo::TypeISOCurrencyCodeA3::USD,
-            'TransactionDateTime' => '2012-03-22T14:57:28-06:00',
+            'TransactionDateTime' => DateTime.now.iso8601(),
             'ApprovalCode' => nil, # Only set this for Force Post Voice Authorized transactions.
             'CashBackAmount' => '0.00', # Used only for PINDebit transactions
             'CustomerPresent' => RbConfig::TxnData_CustomerPresent,
@@ -396,7 +396,7 @@ module Evo
           'TransactionData' => {
             'Amount' => '10.00',
             'CurrencyCode' => Evo::TypeISOCurrencyCodeA3::USD,
-            'TransactionDateTime' => '2012-03-22T14:57:28-06:00',
+            'TransactionDateTime' => DateTime.now.iso8601(),
             # "AccountType" => Evo::AccountType::NotSet, # Used only for PINDebit transactions
             'ApprovalCode' => nil, # Only set this for Force Post Voice Authorized transactions.
             'CashBackAmount' => '0.00', # Used only for PINDebit transactions

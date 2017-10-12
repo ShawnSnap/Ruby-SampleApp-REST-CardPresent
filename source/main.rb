@@ -117,7 +117,7 @@ if client.merchant_profile_id == ''
   Evo::MerchantManagement.save_merchant_profile(client, {}, client.service_id)
 end
 
-p 'Ready for Host Capture  Script'
+p 'Ready for Host Capture Script'
 
 Workflows::HostCapture(client)
 

@@ -5,7 +5,6 @@ module Workflows
     # Get service information to see the avilable functions.
 
     service_response = EvoCWS_endpoint_svcinfo.get_service_info(client)
-    p(service_response.data)
     test_assert(service_response.data['Success'] == true, client)
 
     pindebit_auth_template = {
@@ -39,7 +38,6 @@ module Workflows
         # client.workflow_id = service["ServiceId"];
 
         profiles_response = EvoCWS_endpoint_merchinfo.get_merchant_profiles(client, '')
-        p(profiles_response.data)
         test_assert(profiles_response.data['Success'] == true, client)
         if profiles_response.data['Results'].length <= 0
           p "\n\nFAILED: Need a merchant profile for the service id: ".client.workflow_id
@@ -56,65 +54,58 @@ module Workflows
         end
 
         profile = EvoCWS_endpoint_merchinfo.is_merchant_profile_initialized(client, '')
-        p(profile.data)
         test_assert(profile.data['Success'] == true, client)
 
         ####################
 
         authorized_response = EvoCWS_endpoint_txn.authorize(client, {})
-
-        p(authorized_response.data)
         test_assert(authorized_response.data['Success'] == true, client)
         test_assert(authorized_response.data['Status'] != 'Failure', client)
 
-        captured_response = EvoCWS_endpoint_txn.capture_selective(client, 'TransactionIds' => [
-                                                                    authorized_response.data['TransactionId']
-                                                                  ],
-                                                                          'DifferenceData' => [{
-                                                                            '$type' => 'BankcardCapture,http://schemas.evosnap.com/CWS/v2.0/Transactions/Bankcard',
-                                                                            'Amount' => '10.00',
-                                                                            'TransactionId' => authorized_response.data['TransactionId']
-                                                                          }])
-
-        p(captured_response.data)
+        captured_response = EvoCWS_endpoint_txn.capture_selective(client,
+          'TransactionIds' => [
+            authorized_response.data['TransactionId']
+          ],
+          'DifferenceData' => [{
+            '$type' => 'BankcardCapture,http://schemas.evosnap.com/CWS/v2.0/Transactions/Bankcard',
+            'Amount' => '10.00',
+            'TransactionId' => authorized_response.data['TransactionId']
+          }]
+        )
         test_assert(captured_response.data['Success'] == true, client)
         test_assert(captured_response.data['Status'] != 'Failure', client)
 
-        returned_response = EvoCWS_endpoint_txn.return_by_id(client, 'DifferenceData' => {
-                                                               'TransactionId' => authorized_response.data['TransactionId']
-                                                             })
-
-        p(returned_response.data)
+        returned_response = EvoCWS_endpoint_txn.return_by_id(client,
+          'DifferenceData' => {
+            'TransactionId' => authorized_response.data['TransactionId']
+          }
+        )
         test_assert(returned_response.data['Success'] == true, client)
         test_assert(returned_response.data['Status'] != 'Failure', client)
 
-        captured_return_response = EvoCWS_endpoint_txn.capture_selective(client, 'TransactionIds' => [
-                                                                           returned_response.data['TransactionId']
-                                                                         ],
-                                                                                 'DifferenceData' => [{
-                                                                                   '$type' => 'BankcardCapture,http://schemas.evosnap.com/CWS/v2.0/Transactions/Bankcard',
-                                                                                   'Amount' => '10.00',
-                                                                                   'TransactionId' => returned_response.data['TransactionId']
-
-                                                                                 }])
-
-        p(captured_return_response.data)
+        captured_return_response = EvoCWS_endpoint_txn.capture_selective(client,
+          'TransactionIds' => [
+            returned_response.data['TransactionId']
+          ],
+          'DifferenceData' => [{
+            '$type' => 'BankcardCapture,http://schemas.evosnap.com/CWS/v2.0/Transactions/Bankcard',
+            'TransactionId' => returned_response.data['TransactionId']
+          }]
+        )
         test_assert(captured_return_response.data['Success'] == true, client)
         test_assert(captured_return_response.data['Status'] != 'Failure', client)
 
         ########################
 
         authorized_response = EvoCWS_endpoint_txn.authorize(client, {})
-
-        p(authorized_response.data)
         test_assert(authorized_response.data['Success'] == true, client)
         test_assert(authorized_response.data['Status'] != 'Failure', client)
 
-        undo_response = EvoCWS_endpoint_txn.undo(client, 'DifferenceData' => {
-                                                   'TransactionId' => authorized_response.data['TransactionId']
-                                                 })
-
-        p(undo_response.data)
+        undo_response = EvoCWS_endpoint_txn.undo(client,
+          'DifferenceData' => {
+            'TransactionId' => authorized_response.data['TransactionId']
+          }
+        )
         test_assert(undo_response.data['Success'] == true, client)
         test_assert(undo_response.data['Status'] != 'Failure', client)
 
@@ -126,13 +117,10 @@ module Workflows
         ########################
 
         authorized_response = EvoCWS_endpoint_txn.authorize(client, {})
-
-        p(authorized_response.data)
         test_assert(authorized_response.data['Success'] == true, client)
         test_assert(authorized_response.data['Status'] != 'Failure', client)
 
         response = EvoCWS_endpoint_txn.capture_all(client, {})
-        p(response.data)
         test_assert(authorized_response.data['Success'] == true, client)
         test_assert(authorized_response.data['Status'] != 'Failure', client)
       end
