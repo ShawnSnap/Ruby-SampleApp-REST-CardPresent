@@ -1,8 +1,41 @@
+# This software and documentation is subject to and made
+# available only pursuant to the terms of an executed license
+# agreement, and may be used only in accordance with the terms
+# of said agreement. This software may not, in whole or in part,
+# be copied, photocopied, reproduced, translated, or reduced to
+# any electronic medium or machine-readable form without
+# prior consent, in writing, from EVO Payments International, INC.
+#
+# Use, duplication or disclosure by the U.S. Government is subject
+# to restrictions set forth in an executed license agreement
+# and in subparagraph (c)(1) of the Commercial Computer
+# Software-Restricted Rights Clause at FAR 52.227-19; subparagraph
+# (c)(1)(ii) of the Rights in Technical Data and Computer Software
+# clause at DFARS 252.227-7013, subparagraph (d) of the Commercial
+# Computer Software--Licensing clause at NASA FAR supplement
+# 16-52.227-86; or their equivalent.
+#
+# Information in this software is subject to change without notice
+# and does not represent a commitment on the part of EVO Payments International.
+#
+# Sample Code is for reference Only and is intended to be used for educational
+# purposes. It's the responsibility of the software company to properly
+# integrate into thier solution code that best meets thier production needs.
+#
+# Copyright:: 2017 EVO Payments International - All Rights Reserved
+# License:: Proprietary
+
 require 'time'
 
 module Evo
+  # The Txn class contains methods which allow you to make transactions against
+  # the Snap* platform API.  Note that not all methods are implemented for all
+  # merchants.  You'll want to fetch the Service Information to see which
+  # methods can be run in your application.
+  #
+  # See: http://docs.evosnap.com/commerce-web-services/overview-transaction-processing/
   class Txn
-    def self.authorize_encrypted(evo_cws_client, request)
+    def self.authorize_encrypted(evo_cws_client, request) # rubocop:disable Metrics/MethodLength
       defaults = {
         '$type' => 'AuthorizeTransaction,http://schemas.evosnap.com/CWS/v2.0/Transactions/Rest',
         'ApplicationProfileId' => 'XXXX',
@@ -11,27 +44,43 @@ module Evo
           '$type' => 'BankcardTransaction,http://schemas.evosnap.com/CWS/v2.0/Transactions/Bankcard',
 
           'TenderData' => {
-            'SecurePaymentAccountData' => '87936F09AE06386BA4CD81ADFF7DF0FA5AC1B28EF9F7B7075E415545F9B9095C0AC5FA12B9905325', # Encrypted Track 2 data returned by MagneSafe device when card is swiped.
+            # Encrypted Track 2 data returned by MagneSafe device
+            # when card is swiped.
+            'SecurePaymentAccountData'\
+              => '87936F09AE06386BA4CD81ADFF7DF0FA5AC1B28E'\
+               + 'F9F7B7075E415545F9B9095C0AC5FA12B9905325',\
             'CardSecurityData' => {
-              'IdentificationInformation' => '9ED72A486AB36DC352957C2C00607E937D1D90CB8B09A8588629AABA8EAF0FD65296A4FBA490EECFCD8D5B350438C4BFA6A36FFA2ADAAA3E', # Encrypted MagnePrint� Information returned by the MagneSafe� device when card is swiped.
+              # Encrypted MagnePrint Information returned by the MagneSafe
+              # device when card is swiped.
+              'IdentificationInformation'\
+              => '9ED72A486AB36DC352957C2C00607E937D1D90'\
+               + 'CB8B09A8588629AABA8EAF0FD65296A4FBA490'\
+               + 'EECFCD8D5B350438C4BFA6A36FFA2ADAAA3E'\
             },
-            'EncryptionKeyId' => '9010010B0C2472000021', # 20-character string returned by MagneSafe device when card is swiped.
-            'SwipeStatus' => '00304061', # MagnePrint Status of Card Swipe. This is an alpha numeric string, returned by MagneSafe device when card is swiped.
+            # 20-char string returned by MagneSafe device when card is swiped.
+            'EncryptionKeyId' => '9010010B0C2472000021',
+            # MagnePrint Status of Card Swipe. This is an alpha numeric string,
+            # returned by MagneSafe device when card is swiped.
+            'SwipeStatus' => '00304061',
             'DeviceSerialNumber' => 'B0C2472071812AA'
 
           },
           'TransactionData' => {
             'Amount' => '10.00',
             'CurrencyCode' => Evo::TypeISOCurrencyCodeA3::USD,
-            'TransactionDateTime' => DateTime.now.iso8601(),
-            'ApprovalCode' => nil, # Only set this for Force Post Voice Authorized transactions.
-            'CashBackAmount' => '0.00', # Used only for PINDebit transactions
+            'TransactionDateTime' => DateTime.now.iso8601,
+            # Only set this for Force Post Voice Authorized transactions.
+            'ApprovalCode' => nil,
+            # Used only for PINDebit transactions
+            'CashBackAmount' => '0.00',
             'CustomerPresent' => RbConfig::TxnData_CustomerPresent,
             'EmployeeId' => '1234',
             'EntryMode' => RbConfig::TxnData_EntryMode,
             'OrderNumber' => '12345',
-            'Reference' => '11', # This needs to be a unique value for each transaction
-            'SignatureCaptured' => true, # set to true if signature is captured physically or digitally
+            # This needs to be a unique value for each transaction
+            'Reference' => '11',
+            # Set to true if signature is captured physically or digitally
+            'SignatureCaptured' => true,
             'TipAmount' => '0.00'
           }
         }
@@ -45,12 +94,18 @@ module Evo
       workflow_id = URI.encode(evo_cws_client.workflow_id)
 
       evo_cws_client.last_call = name + '::' + __method__.to_s
-      evo_cws_client.send(RbConfig::BasePath + '/TPS.svc/' + workflow_id, request, Net::HTTP::Post, RbConfig::BaseURL)
+      evo_cws_client.send(
+        RbConfig::BasePath + '/TPS.svc/' + workflow_id,
+        request,
+        Net::HTTP::Post,
+        RbConfig::BaseURL
+      )
     end
 
-    def self.authorize(evo_cws_client, request)
+    def self.authorize(evo_cws_client, request) # rubocop:disable Metrics/MethodLength
       defaults = {
-        '$type' => 'AuthorizeTransaction,http://schemas.evosnap.com/CWS/v2.0/Transactions/Rest',
+        '$type' => 'AuthorizeTransaction,'\
+           + 'http://schemas.evosnap.com/CWS/v2.0/Transactions/Rest',\
         'ApplicationProfileId' => '',
         'MerchantProfileId' => '',
         'Transaction' => {
@@ -67,7 +122,8 @@ module Evo
               'Track1Data' => nil,
               'Track2Data' => '5454545454545454=15121010134988000010'
             } # ,
-            # AVS Data is optional.  For Keyed transactions the Postal Code will help qualify your transaction for lower interchange
+            # AVS Data is optional.  For Keyed transactions the Postal Code will
+            # help qualify your transaction for lower interchange
             # "CardSecurityData" => {
             # "AVSData" => {
             # "CardholderName" => "SJohnson",
@@ -88,14 +144,17 @@ module Evo
           'TransactionData' => {
             'Amount' => '10.00',
             'CurrencyCode' => Evo::TypeISOCurrencyCodeA3::USD,
-            'TransactionDateTime' => DateTime.now.iso8601(),
-            # "AccountType" => Evo::AccountType::NotSet, # Used only for PINDebit transactions
-            'ApprovalCode' => nil, # Only set this for Force Post Voice Authorized transactions.
+            'TransactionDateTime' => DateTime.now.iso8601,
+            # Used only for PINDebit transactions
+            # "AccountType" => Evo::AccountType::NotSet,
+            # Only set this for Force Post Voice Authorized transactions.
+            'ApprovalCode' => nil,
             # "CashBackAmount" => "0.00", # Used only for PINDebit transactions
             'CustomerPresent' => RbConfig::TxnData_CustomerPresent,
             'EmployeeId' => '1234',
             'EntryMode' => RbConfig::TxnData_EntryMode,
-            # "GoodsType" => Evo::GoodsType::DigitalGoods, # Used only for Ecommerce IndustryType transactions
+            # Used only for Ecommerce IndustryType transactions
+            # "GoodsType" => Evo::GoodsType::DigitalGoods,
             # "InternetTransactionData" => {
             # "IpAddress" => "1.1.1.1",
             # "SessionId" => "12345"
@@ -103,9 +162,12 @@ module Evo
             # "InvoiceNumber" => nil,
             'OrderNumber' => '12345',
             # "IsPartialShipment" => false, # Used in Ecommerce/MOTO
-            'SignatureCaptured' => true, # set to true if signature is captured physically or digitally
+            # set to true if signature is captured physically or digitally
+            'SignatureCaptured' => true,
             'TipAmount' => '0.00',
-            'TransactionCode' => Evo::TransactionCode::NotSet # Only use the Override flag if you wish to force a duplicate authorization through for the same card - same amount
+            # Only use the Override flag if you wish to force a duplicate
+            # authorization through for the same card - same amount
+            'TransactionCode' => Evo::TransactionCode::NotSet
           }
         }
       }
@@ -119,10 +181,15 @@ module Evo
       workflow_id = URI.encode(evo_cws_client.workflow_id)
 
       evo_cws_client.last_call = name + '::' + __method__.to_s
-      evo_cws_client.send(RbConfig::BasePath + '/TPS.svc/' + workflow_id, request, Net::HTTP::Post, RbConfig::BaseURL)
+      evo_cws_client.send(
+        RbConfig::BasePath + '/TPS.svc/' + workflow_id,
+        request,
+        Net::HTTP::Post,
+        RbConfig::BaseURL
+      )
     end
 
-    def self.authorize_and_capture_encrypted(evo_cws_client, request)
+    def self.authorize_and_capture_encrypted(evo_cws_client, request) # rubocop:disable Metrics/MethodLength
       defaults = {
         '$type' => 'AuthorizeTransaction,http://schemas.evosnap.com/CWS/v2.0/Transactions/Rest',
         'ApplicationProfileId' => 'XXXX',
@@ -131,27 +198,44 @@ module Evo
           '$type' => 'BankcardTransaction,http://schemas.evosnap.com/CWS/v2.0/Transactions/Bankcard',
 
           'TenderData' => {
-            'SecurePaymentAccountData' => '87936F09AE06386BA4CD81ADFF7DF0FA5AC1B28EF9F7B7075E415545F9B9095C0AC5FA12B9905325', # Encrypted Track 2 data returned by MagneSafe device when card is swiped.
+            # Encrypted Track 2 data returned by MagneSafe device when
+            # card is swiped.
+            'SecurePaymentAccountData'\
+              => '87936F09AE06386BA4CD81ADFF7DF0FA5AC1B28E'\
+               + 'F9F7B7075E415545F9B9095C0AC5FA12B9905325',
+            # Encrypted MagnePrint Information returned by the MagneSafe
+            # device when card is swiped.
             'CardSecurityData' => {
-              'IdentificationInformation' => '9ED72A486AB36DC352957C2C00607E937D1D90CB8B09A8588629AABA8EAF0FD65296A4FBA490EECFCD8D5B350438C4BFA6A36FFA2ADAAA3E', # Encrypted MagnePrint� Information returned by the MagneSafe� device when card is swiped.
+              'IdentificationInformation'\
+                => '9ED72A486AB36DC352957C2C00607E937D1D9'\
+                 + '0CB8B09A8588629AABA8EAF0FD65296A4FBA4'\
+                 + '90EECFCD8D5B350438C4BFA6A36FFA2ADAAA3E'
             },
-            'EncryptionKeyId' => '9010010B0C2472000021', # 20-character string returned by MagneSafe device when card is swiped.
-            'SwipeStatus' => '00304061', # MagnePrint Status of Card Swipe. This is an alpha numeric string, returned by MagneSafe device when card is swiped.
+            # 20-character string returned by MagneSafe device when
+            # card is swiped.
+            'EncryptionKeyId' => '9010010B0C2472000021',
+            # MagnePrint Status of Card Swipe. This is an alpha numeric string,
+            # returned by MagneSafe device when card is swiped.
+            'SwipeStatus' => '00304061',
             'DeviceSerialNumber' => 'B0C2472071812AA'
 
           },
           'TransactionData' => {
             'Amount' => '10.00',
             'CurrencyCode' => Evo::TypeISOCurrencyCodeA3::USD,
-            'TransactionDateTime' => DateTime.now.iso8601(),
-            'ApprovalCode' => nil, # Only set this for Force Post Voice Authorized transactions.
-            'CashBackAmount' => '0.00', # Used only for PINDebit transactions
+            'TransactionDateTime' => DateTime.now.iso8601,
+            # Only set this for Force Post Voice Authorized transactions.
+            'ApprovalCode' => nil,
+            # Used only for PINDebit transactions
+            'CashBackAmount' => '0.00',
             'CustomerPresent' => RbConfig::TxnData_CustomerPresent,
             'EmployeeId' => '1234',
             'EntryMode' => RbConfig::TxnData_EntryMode,
             'OrderNumber' => '12345',
-            'Reference' => '11', # This needs to be a unique value for each transaction
-            'SignatureCaptured' => true, # set to true if signature is captured physically or digitally
+            # This needs to be a unique value for each transaction
+            'Reference' => '11',
+            # set to true if signature is captured physically or digitally
+            'SignatureCaptured' => true,
             'TipAmount' => '0.00'
           }
         }
@@ -165,10 +249,15 @@ module Evo
       workflow_id = URI.encode(evo_cws_client.workflow_id)
 
       evo_cws_client.last_call = name + '::' + __method__.to_s
-      evo_cws_client.send(RbConfig::BasePath + '/TPS.svc/' + workflow_id, request, Net::HTTP::Post, RbConfig::BaseURL)
-      end
+      evo_cws_client.send(
+        RbConfig::BasePath + '/TPS.svc/' + workflow_id,
+        request,
+        Net::HTTP::Post,
+        RbConfig::BaseURL
+      )
+    end
 
-    def self.authorize_and_capture(evo_cws_client, request)
+    def self.authorize_and_capture(evo_cws_client, request) # rubocop:disable Metrics/MethodLength
       defaults = {
         '$type' => 'AuthorizeAndCaptureTransaction,http://schemas.evosnap.com/CWS/v2.0/Transactions/Rest',
         'ApplicationProfileId' => '',
@@ -187,7 +276,9 @@ module Evo
               'Track1Data' => nil,
               'Track2Data' => '5454545454545454=15121010134988000010'
             } # ,
-            # AVS Data is optional.  For Keyed transactions the Postal Code will help qualify your transaction for lower interchange
+            # AVS Data is optional.
+            # For Keyed transactions the Postal Code will help qualify your
+            # transaction for lower interchange
             # "CardSecurityData" => {
             # "AVSData" => {
             # "CardholderName" => "SJohnson",
@@ -208,14 +299,18 @@ module Evo
           'TransactionData' => {
             'Amount' => '10.00',
             'CurrencyCode' => Evo::TypeISOCurrencyCodeA3::USD,
-            'TransactionDateTime' => DateTime.now.iso8601(),
-            'AccountType' => Evo::AccountType::NotSet, # Used only for PINDebit transactions
-            'ApprovalCode' => nil, # Only set this for Force Post Voice Authorized transactions.
-            'CashBackAmount' => '0.00', # Used only for PINDebit transactions
+            'TransactionDateTime' => DateTime.now.iso8601,
+            # Used only for PINDebit transactions
+            'AccountType' => Evo::AccountType::NotSet,
+            # Only set this for Force Post Voice Authorized transactions.
+            'ApprovalCode' => nil,
+            # Used only for PINDebit transactions
+            'CashBackAmount' => '0.00',
             'CustomerPresent' => RbConfig::TxnData_CustomerPresent,
             'EmployeeId' => '1234',
             'EntryMode' => RbConfig::TxnData_EntryMode,
-            # "GoodsType" => Evo::GoodsType::DigitalGoods, # Used only for Ecommerce IndustryType transactions
+            # Used only for Ecommerce IndustryType transactions
+            # "GoodsType" => Evo::GoodsType::DigitalGoods,
             # "InternetTransactionData" => {
             # "IpAddress" => "1.1.1.1",
             # "SessionId" => "12345"
@@ -223,9 +318,12 @@ module Evo
             # "InvoiceNumber" => nil,
             'OrderNumber' => '12345',
             # "IsPartialShipment" => false, # Used in Ecommerce/MOTO
-            'SignatureCaptured' => true, # set to true if signature is captured physically or digitally
+            # set to true if signature is captured physically or digitally
+            'SignatureCaptured' => true,
             'TipAmount' => '0.00',
-            'TransactionCode' => Evo::TransactionCode::NotSet # Only use the Override flag if you wish to force a duplicate authorization through for the same card - same amount
+            # Only use the Override flag if you wish to force a duplicate
+            # authorization through for the same card - same amount
+            'TransactionCode' => Evo::TransactionCode::NotSet
           }
         }
       }
@@ -239,10 +337,15 @@ module Evo
       workflow_id = URI.encode(evo_cws_client.workflow_id)
 
       evo_cws_client.last_call = name + '::' + __method__.to_s
-      evo_cws_client.send(RbConfig::BasePath + '/TPS.svc/' + workflow_id, request, Net::HTTP::Post, RbConfig::BaseURL)
-      end
+      evo_cws_client.send(
+        RbConfig::BasePath + '/TPS.svc/' + workflow_id,
+        request,
+        Net::HTTP::Post,
+        RbConfig::BaseURL
+      )
+    end
 
-    def self.capture(evo_cws_client, request)
+    def self.capture(evo_cws_client, request) # rubocop:disable Metrics/MethodLength
       defaults = {
         '$type' => 'Capture,http://schemas.evosnap.com/CWS/v2.0/Transactions/Rest',
         'ApplicationProfileId' => '',
@@ -262,10 +365,16 @@ module Evo
       workflow_id = URI.encode(evo_cws_client.workflow_id)
 
       evo_cws_client.last_call = name + '::' + __method__.to_s
-      evo_cws_client.send(RbConfig::BasePath + '/TPS.svc/' + workflow_id + '/' + request['DifferenceData']['TransactionId'], request, Net::HTTP::Put, RbConfig::BaseURL)
+      evo_cws_client.send(
+        RbConfig::BasePath + '/TPS.svc/' + workflow_id + '/'\
+          + request['DifferenceData']['TransactionId'],
+        request,
+        Net::HTTP::Put,
+        RbConfig::BaseURL
+      )
     end
 
-    def self.undo(evo_cws_client, request)
+    def self.undo(evo_cws_client, request) # rubocop:disable Metrics/MethodLength
       defaults = {
         '$type' => 'Undo,http://schemas.evosnap.com/CWS/v2.0/Transactions/Rest',
         'ApplicationProfileId' => '',
@@ -283,10 +392,16 @@ module Evo
       workflow_id = URI.encode(evo_cws_client.workflow_id)
 
       evo_cws_client.last_call = name + '::' + __method__.to_s
-      evo_cws_client.send(RbConfig::BasePath + '/TPS.svc/' + workflow_id + '/' + request['DifferenceData']['TransactionId'], request, Net::HTTP::Put, RbConfig::BaseURL)
+      evo_cws_client.send(
+        RbConfig::BasePath + '/TPS.svc/' + workflow_id + '/'\
+          + request['DifferenceData']['TransactionId'],
+        request,
+        Net::HTTP::Put,
+        RbConfig::BaseURL
+      )
     end
 
-    def self.return_by_id(evo_cws_client, request)
+    def self.return_by_id(evo_cws_client, request) # rubocop:disable Metrics/MethodLength
       defaults = {
         '$type' => 'ReturnById,http://schemas.evosnap.com/CWS/v2.0/Transactions/Rest',
         'ApplicationProfileId' => '',
@@ -294,7 +409,8 @@ module Evo
         'DifferenceData' => {
           '$type' => 'BankcardReturn,http://schemas.evosnap.com/CWS/v2.0/Transactions/Bankcard',
           'TransactionId' => '--Transaction ID Required--',
-          'Amount' => '1.00', # If amount is not set the full amount authorized will be returned.
+          # If amount is not set the full amount authorized will be returned.
+          'Amount' => '1.00',
           'Addendum' => nil
         }
       }
@@ -307,10 +423,15 @@ module Evo
       workflow_id = URI.encode(evo_cws_client.workflow_id)
 
       evo_cws_client.last_call = name + '::' + __method__.to_s
-      evo_cws_client.send(RbConfig::BasePath + '/TPS.svc/' + workflow_id, request, Net::HTTP::Post, RbConfig::BaseURL)
+      evo_cws_client.send(
+        RbConfig::BasePath + '/TPS.svc/' + workflow_id,
+        request,
+        Net::HTTP::Post,
+        RbConfig::BaseURL
+      )
     end
 
-    def self.return_unlinked_encrypted(evo_cws_client, request)
+    def self.return_unlinked_encrypted(evo_cws_client, request) # rubocop:disable Metrics/MethodLength
       defaults = {
         '$type' => 'AuthorizeTransaction,http://schemas.evosnap.com/CWS/v2.0/Transactions/Rest',
         'ApplicationProfileId' => 'XXXX',
@@ -319,27 +440,44 @@ module Evo
           '$type' => 'BankcardTransaction,http://schemas.evosnap.com/CWS/v2.0/Transactions/Bankcard',
 
           'TenderData' => {
-            'SecurePaymentAccountData' => '87936F09AE06386BA4CD81ADFF7DF0FA5AC1B28EF9F7B7075E415545F9B9095C0AC5FA12B9905325', # Encrypted Track 2 data returned by MagneSafe device when card is swiped.
+            # Encrypted Track 2 data returned by MagneSafe device when
+            # card is swiped.
+            'SecurePaymentAccountData'\
+              => '87936F09AE06386BA4CD81ADFF7DF0FA5AC1B28E'\
+               + 'F9F7B7075E415545F9B9095C0AC5FA12B9905325',
+            # Encrypted MagnePrint Information returned by the MagneSafe
+            # device when card is swiped.
             'CardSecurityData' => {
-              'IdentificationInformation' => '9ED72A486AB36DC352957C2C00607E937D1D90CB8B09A8588629AABA8EAF0FD65296A4FBA490EECFCD8D5B350438C4BFA6A36FFA2ADAAA3E', # Encrypted MagnePrint� Information returned by the MagneSafe� device when card is swiped.
+              'IdentificationInformation'\
+                => '9ED72A486AB36DC352957C2C00607E937D1D9'\
+                 + '0CB8B09A8588629AABA8EAF0FD65296A4FBA4'\
+                 + '90EECFCD8D5B350438C4BFA6A36FFA2ADAAA3E'
             },
-            'EncryptionKeyId' => '9010010B0C2472000021', # 20-character string returned by MagneSafe device when card is swiped.
-            'SwipeStatus' => '00304061', # MagnePrint Status of Card Swipe. This is an alpha numeric string, returned by MagneSafe device when card is swiped.
+            # 20-character string returned by MagneSafe device when
+            # card is swiped.
+            'EncryptionKeyId' => '9010010B0C2472000021',
+            # MagnePrint Status of Card Swipe. This is an alpha numeric string,
+            # returned by MagneSafe device when card is swiped.
+            'SwipeStatus' => '00304061',
             'DeviceSerialNumber' => 'B0C2472071812AA'
 
           },
           'TransactionData' => {
             'Amount' => '10.00',
             'CurrencyCode' => Evo::TypeISOCurrencyCodeA3::USD,
-            'TransactionDateTime' => DateTime.now.iso8601(),
-            'ApprovalCode' => nil, # Only set this for Force Post Voice Authorized transactions.
-            'CashBackAmount' => '0.00', # Used only for PINDebit transactions
+            'TransactionDateTime' => DateTime.now.iso8601,
+            # Only set this for Force Post Voice Authorized transactions.
+            'ApprovalCode' => nil,
+            # Used only for PINDebit transactions
+            'CashBackAmount' => '0.00',
             'CustomerPresent' => RbConfig::TxnData_CustomerPresent,
             'EmployeeId' => '1234',
             'EntryMode' => RbConfig::TxnData_EntryMode,
             'OrderNumber' => '12345',
-            'Reference' => '11', # This needs to be a unique value for each transaction
-            'SignatureCaptured' => true, # set to true if signature is captured physically or digitally
+            # This needs to be a unique value for each transaction
+            'Reference' => '11',
+            # set to true if signature is captured physically or digitally
+            'SignatureCaptured' => true,
             'TipAmount' => '0.00'
           }
         }
@@ -353,10 +491,15 @@ module Evo
       workflow_id = URI.encode(evo_cws_client.workflow_id)
 
       evo_cws_client.last_call = name + '::' + __method__.to_s
-      evo_cws_client.send(RbConfig::BasePath + '/TPS.svc/' + workflow_id, request, Net::HTTP::Post, RbConfig::BaseURL)
+      evo_cws_client.send(
+        RbConfig::BasePath + '/TPS.svc/' + workflow_id,
+        request,
+        Net::HTTP::Post,
+        RbConfig::BaseURL
+      )
     end
 
-    def self.return_unlinked(evo_cws_client, request)
+    def self.return_unlinked(evo_cws_client, request) # rubocop:disable Metrics/MethodLength
       defaults = {
         '$type' => 'ReturnTransaction,http://schemas.evosnap.com/CWS/v2.0/Transactions/Rest',
         'ApplicationProfileId' => '',
@@ -375,7 +518,9 @@ module Evo
               'Track1Data' => nil,
               'Track2Data' => nil
             },
-            # AVS Data is optional.  For Keyed transactions the Postal Code will help qualify your transaction for lower interchange
+            # AVS Data is optional.
+            # For Keyed transactions the Postal Code will help qualify your
+            # transaction for lower interchange
             'CardSecurityData' => {
               'AVSData' => {
                 'CardholderName' => 'SJohnson',
@@ -396,14 +541,18 @@ module Evo
           'TransactionData' => {
             'Amount' => '10.00',
             'CurrencyCode' => Evo::TypeISOCurrencyCodeA3::USD,
-            'TransactionDateTime' => DateTime.now.iso8601(),
-            # "AccountType" => Evo::AccountType::NotSet, # Used only for PINDebit transactions
-            'ApprovalCode' => nil, # Only set this for Force Post Voice Authorized transactions.
-            'CashBackAmount' => '0.00', # Used only for PINDebit transactions
+            'TransactionDateTime' => DateTime.now.iso8601,
+            # Used only for PINDebit transactions
+            # "AccountType" => Evo::AccountType::NotSet,
+            # Only set this for Force Post Voice Authorized transactions.
+            'ApprovalCode' => nil,
+            # Used only for PINDebit transactions
+            'CashBackAmount' => '0.00',
             'CustomerPresent' => RbConfig::TxnData_CustomerPresent,
             'EmployeeId' => '1234',
             'EntryMode' => RbConfig::TxnData_EntryMode,
-            # "GoodsType" => Evo::GoodsType::DigitalGoods, # Used only for Ecommerce IndustryType transactions
+            # Used only for Ecommerce IndustryType transactions
+            # "GoodsType" => Evo::GoodsType::DigitalGoods,
             # "InternetTransactionData" => {
             # "IpAddress" => "1.1.1.1",
             # "SessionId" => "12345"
@@ -411,9 +560,12 @@ module Evo
             # "InvoiceNumber" => nil,
             'OrderNumber' => '12345',
             # "IsPartialShipment" => false, # Used in Ecommerce/MOTO
-            'SignatureCaptured' => false, # set to true if signature is captured physically or digitally
+            # set to true if signature is captured physically or digitally
+            'SignatureCaptured' => false,
             'TipAmount' => '0.00',
-            'TransactionCode' => Evo::TransactionCode::NotSet # Only use the Override flag if you wish to force a duplicate authorization through for the same card - same amount
+            # Only use the Override flag if you wish to force a duplicate
+            # authorization through for the same card - same amount
+            'TransactionCode' => Evo::TransactionCode::NotSet
           }
         }
       }
@@ -424,10 +576,15 @@ module Evo
       request = Evo.recursive_merge(defaults, request)
 
       evo_cws_client.last_call = name + '::' + __method__.to_s
-      evo_cws_client.send(RbConfig::BasePath + '/TPS.svc/' + evo_cws_client.workflow_id, request, Net::HTTP::Post, RbConfig::BaseURL)
+      evo_cws_client.send(
+        RbConfig::BasePath + '/TPS.svc/' + evo_cws_client.workflow_id,
+        request,
+        Net::HTTP::Post,
+        RbConfig::BaseURL
+      )
     end
 
-    def self.capture_all(evo_cws_client, request)
+    def self.capture_all(evo_cws_client, request) # rubocop:disable Metrics/MethodLength
       defaults = {
         '$type' => 'CaptureAll,http://schemas.evosnap.com/CWS/v2.0/Transactions/Rest',
         'ApplicationProfileId' => '',
@@ -442,10 +599,15 @@ module Evo
       workflow_id = URI.encode(evo_cws_client.workflow_id)
 
       evo_cws_client.last_call = name + '::' + __method__.to_s
-      evo_cws_client.send(RbConfig::BasePath + '/TPS.svc/' + workflow_id, request, Net::HTTP::Put, RbConfig::BaseURL)
+      evo_cws_client.send(
+        RbConfig::BasePath + '/TPS.svc/' + workflow_id,
+        request,
+        Net::HTTP::Put,
+        RbConfig::BaseURL
+      )
     end
 
-    def self.capture_selective(evo_cws_client, request)
+    def self.capture_selective(evo_cws_client, request) # rubocop:disable Metrics/MethodLength
       defaults = {
         '$type' => 'CaptureSelective,http://schemas.evosnap.com/CWS/v2.0/Transactions/Rest',
         'ApplicationProfileId' => '',
@@ -467,7 +629,12 @@ module Evo
       workflow_id = URI.encode(evo_cws_client.workflow_id)
 
       evo_cws_client.last_call = name + '::' + __method__.to_s
-      evo_cws_client.send(RbConfig::BasePath + '/TPS.svc/' + workflow_id, request, Net::HTTP::Put, RbConfig::BaseURL)
+      evo_cws_client.send(
+        RbConfig::BasePath + '/TPS.svc/' + workflow_id,
+        request,
+        Net::HTTP::Put,
+        RbConfig::BaseURL
+      )
     end
   end
 end

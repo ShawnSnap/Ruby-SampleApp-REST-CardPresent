@@ -1,13 +1,10 @@
-
-# Copyright (c) 2013 EVO Payments International - All Rights Reserved.
-#
 # This software and documentation is subject to and made
 # available only pursuant to the terms of an executed license
 # agreement, and may be used only in accordance with the terms
 # of said agreement. This software may not, in whole or in part,
 # be copied, photocopied, reproduced, translated, or reduced to
 # any electronic medium or machine-readable form without
-# prior consent, in writing, from EVO Payments International
+# prior consent, in writing, from EVO Payments International, INC.
 #
 # Use, duplication or disclosure by the U.S. Government is subject
 # to restrictions set forth in an executed license agreement
@@ -21,14 +18,19 @@
 # Information in this software is subject to change without notice
 # and does not represent a commitment on the part of EVO Payments International.
 #
-# Sample Code is for reference Only and is intended to be used for educational purposes. It"s the responsibility of
-# the software company to properly integrate into thier solution code that best meets thier production needs.
+# Sample Code is for reference Only and is intended to be used for educational
+# purposes. It's the responsibility of the software company to properly
+# integrate into thier solution code that best meets thier production needs.
 #
+# Copyright:: 2017 EVO Payments International - All Rights Reserved
+# License:: Proprietary
+
 require_relative 'client_api'
 require_relative 'config'
-require_relative 'Helpers/simple_response'
 require_relative 'Helpers/constants_shared'
 require_relative 'Helpers/recursive_merge'
+require_relative 'Helpers/simple_response'
+require_relative 'Helpers/test_assert'
 require 'json'
 require 'openssl'
 
@@ -39,9 +41,10 @@ require 'openssl'
 #	fp.close()
 # end
 
-p "Hello! Before you test this sample code, please crack open the code and check out what's going on."
-p 'Your solutions consultant has selected a number of tests to run through to ensure this sample works.'
-p 'If you have questions, please contact us at support@evosnap.com'
+p 'Hello! Before you test this sample code, please crack open the code and'
+p 'check out what\'s going on.  Your solutions consultant has selected a number'
+p 'of tests to run through to ensure this sample works. If you have questions,'
+p 'please contact us at support@evosnap.com'
 
 # Publisher
 
@@ -73,30 +76,18 @@ client.application_profile_id = RbConfig::ApplicationProfileId
 client.workflow_id = RbConfig::WorkflowId
 # client.service_id = RbConfig::ServiceID
 
-client.sign_on(RbConfig::IdentityToken)
-
 client.workflow_id = RbConfig::ServiceID if RbConfig::UseWorkflow == false
-
-module Workflows
-  def self.test_assert(test, result)
-    if !test
-      p 'FAILED: ' + result.last_call
-      exit
-    else
-      p 'SUCCESS: ' + result.last_call
-    end
-  end
-end
 
 if client.application_profile_id == ''
   p 'Calling SaveApplicationData'
 
-  appProfileId_response = Evo::ApplicationManagement.save_application_data(client)
-  parsed_response = JSON.parse(appProfileId_response.body)
+  app_profile_id_response =
+    Evo::ApplicationManagement.save_application_data(client)
+  parsed_response = JSON.parse(app_profile_id_response.body)
   client.application_profile_id = parsed_response['id']
   p 'ApplicationProfileId = ' + client.application_profile_id
 
-    end
+end
 
 if client.workflow_id == ''
   p 'Calling GetServiceInformation'
@@ -108,8 +99,8 @@ if client.workflow_id == ''
 
       client.workflow_id = service['ServiceId']
     end
-        end
-        end
+  end
+end
 
 if client.merchant_profile_id == ''
   p 'Calling SaveMerchantProfiles'
@@ -119,14 +110,14 @@ end
 
 p 'Ready for Host Capture Script'
 
-Workflows::HostCapture(client)
+Workflows.host_capture(client)
 
 p 'Ready for Terminal Capture Script'
 
-Workflows::TerminalCapture(client)
+Workflows.terminal_capture(client)
 
 p 'Ready for TMS Script'
 
-Workflows::TMS(client)
+Workflows.tms(client)
 
 p('Done.')
