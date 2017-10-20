@@ -1,3 +1,5 @@
+![Snap* API 2.1.28](https://img.shields.io/badge/Snap*%20API-2.1.28-blue.svg) ![Release Version](https://img.shields.io/github/release/EVO-Snap/Ruby-SampleApp-REST-CardPresent.svg) ![Rubocop: No Violations!](https://img.shields.io/badge/Rubocop-No%20Violations!-brightgreen.svg)
+
 # EVO Snap* Ruby Card Present Rest Sample Application
 
 This application is sample code demonstrating how to integrate with Evo Snap*'s
@@ -37,13 +39,10 @@ your Solutions Consultant.
 5. If you use a proxy application, like Charles Proxy, to intercept API calls
    for debugging, or if your internet connection requires a proxy step, you'll
 	 want to configure the Proxy section to point to your proxy.
-6. The "Key" configuration value sets an encryption key used by the application
-   to encrypt your session key for persistent storage.  You should change this
-	 to something less predictable!
-5. The application defaults to Retail Card Present configurations for the Demo
-   Mode.  If your actual industry type is different, you will need to configure
-	 the application accordingly.  You can reach out to your Solutions Consultant
-	 if you require assistance with this step.
+6. The application defaults to Ecommerce Card Not Present configurations for the
+   Demo  Mode.  If your actual industry type is different, you will need to
+   configure the application accordingly.  You can reach out to your Solutions
+   Consultant if you require assistance with this step.
 
 ### Note: Production Use
 
@@ -64,16 +63,21 @@ the command line with your ruby interpreter.  The application runs through a
 series of setup steps to prepare your application to transact with the Snap*
 platform, followed by three workflows:
 
-1. The *host_capture* workflow emulates the workflow followed when your
-   application captures the payment details directly, through keying or some
-	 piece of external hardware.
-2. The *terminal_capture* workflow emulates the workflow whereby the payment
-   details for the transaction are captured with a separate hardware terminal.
+1. The *host_capture* workflow emulates the workflow followed when transactions
+   are batched on the host for capture.
+2. The *terminal_capture* workflow emulates the workflow where transactions are
+   batched at the terminal for capture.
 3. The *tms* workflow demonstrates Snap*'s Transaction Management Service, which
    stores your historical transaction details securely in the cloud.  TMS
 	 provides you with a simple query-and-fetch API you can use to pull the
 	 transaction details directly from our service without having to store and
 	 share them locally.
+
+Host Capture and Terminal Capture support different api calls;  the specific API
+calls you can make depend on your Service ID;  the get_service_info call in
+ApplicationAndMerchantSetup/3_get_service_information.rb will provide you with
+a hash containing the "Operations" key which show which operations are valid for
+your workflow and service configuration.
 
 ## Understanding The Application
 
